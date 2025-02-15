@@ -5,7 +5,8 @@ import { withDefaultErrorHandler } from "wehere-bot/src/utils/error";
 import { formatThread, html } from "wehere-bot/src/utils/format";
 import { z } from "zod";
 
-import { getAngelLocale, setAngelSubscription } from "../operations/angel";
+import { collections } from "../operations";
+import { getAngelLocale } from "../operations/angel";
 import { getThread_givenThreadId } from "../operations/thread";
 
 const handleCallbackQuery = withDefaultErrorHandler(async (ctx) => {
@@ -17,10 +18,10 @@ const handleCallbackQuery = withDefaultErrorHandler(async (ctx) => {
   );
   const thread = await getThread_givenThreadId(ctx, threadId);
   assert(thread, "thread not found");
-  await setAngelSubscription(
+  await collections.angel_subscription.upsertOne(
     ctx,
     { chatId: msg0.chat.id },
-    { replyingToThreadId: threadId, updatedAt: Date.now() }
+    { $set: { replyingToThreadId: threadId, updatedAt: Date.now() } }
   );
 
   const locale = await getAngelLocale(ctx, msg0.chat.id);

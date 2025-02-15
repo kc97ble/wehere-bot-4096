@@ -22,8 +22,8 @@ TODO: allow angel and mortal to set languages, also, use the user preferred lang
 TODO: add cached functions in context such as getRole, getLocale
 
 TODO: use monolith for better latency
-TODO: in .env file, all values are percent encoded
 
 TODO: find a way to self test faster, maybe some auto reply commands (messages start with >)
-TODO: means we need
+TODO: means we need to have a queue of undone jobs
+TODO: centralize DB operations
 ```

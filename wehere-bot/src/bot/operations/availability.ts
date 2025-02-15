@@ -13,13 +13,14 @@ import {
 import { html } from "wehere-bot/src/utils/format";
 import { getWehereUrlV2 } from "wehere-bot/src/utils/parse";
 
-import { getAngelSubscriptions } from "./angel";
 import {
   createMessage,
   joinPromisesGracefully,
   notifyNewMessage,
 } from "./message";
 import { readTemplate } from "./template";
+
+import { collections } from ".";
 
 type ParsedAvailability = {
   value: boolean;
@@ -30,7 +31,7 @@ export async function notifyChangedAvailability(
   ctx: Pick<BotContext, "db" | "api" | "i18n" | "pusher">
 ) {
   const angels: PersistentAngelSubscription[] =
-    await getAngelSubscriptions(ctx);
+    await collections.angel_subscription.findMany(ctx);
   const availability = await getAvailability(ctx);
   const promises: Promise<void>[] = angels.map(async (angel) => {
     const locale = Locale.orDefault(angel.locale);
@@ -157,7 +158,8 @@ export async function remindAllAngelsToUpdateAvailability(
   ctx: Pick<BotContext, "db" | "api" | "i18n">,
   params: { expected: boolean; observed: boolean; timestamp: number }
 ) {
-  const angels = await getAngelSubscriptions(ctx);
+  const angels: PersistentAngelSubscription[] =
+    await collections.angel_subscription.findMany(ctx);
   const promises = angels.map(async (angel) => {
     const locale = Locale.orDefault(angel.locale);
     await ctx.api.sendMessage(

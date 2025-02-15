@@ -7,10 +7,7 @@ import type { InjectedContext$WithTranslate } from "wehere-bot/src/utils/error";
 import { formatThread, html } from "wehere-bot/src/utils/format";
 import { getWehereUrlV2 } from "wehere-bot/src/utils/parse";
 
-import {
-  readAngelSubscription,
-  setAngelSubscription,
-} from "../operations/angel";
+import { collections } from "../operations";
 import { getRole } from "../operations/role";
 
 async function checkAngelRole(ctx: BotContext & InjectedContext$WithTranslate) {
@@ -26,7 +23,9 @@ const $ = new CommandBuilder("subscription");
 $.route("/", async (ctx) => {
   await checkAngelRole(ctx);
   const chat = nonNullable(ctx.chat);
-  const angel = await readAngelSubscription(ctx, { chatId: chat.id });
+  const angel = await collections.angel_subscription.findOne(ctx, {
+    chatId: chat.id,
+  });
   if (!angel) {
     await ctx.replyHtml(ctx.t("html-you-not-subscribing"), {
       reply_markup: new InlineKeyboard().text(
@@ -75,10 +74,10 @@ $.route("/subscribe", async (ctx) => {
   await checkAngelRole(ctx);
   const chat = nonNullable(ctx.chat);
 
-  await setAngelSubscription(
+  await collections.angel_subscription.upsertOne(
     ctx,
     { chatId: chat.id },
-    { replyingToThreadId: null }
+    { $set: { replyingToThreadId: null } }
   );
 
   await ctx.replyHtml(ctx.t("html-alright-you-subscribing"), {
@@ -92,7 +91,7 @@ $.route("/subscribe", async (ctx) => {
 $.route("/unsubscribe", async (ctx) => {
   await checkAngelRole(ctx);
   const chat = nonNullable(ctx.chat);
-  await setAngelSubscription(ctx, { chatId: chat.id }, null);
+  await collections.angel_subscription.deleteOne(ctx, { chatId: chat.id });
 
   await ctx.replyHtml(ctx.t("html-done-you-unsubscribed"), {
     reply_markup: new InlineKeyboard().text(
@@ -105,12 +104,11 @@ $.route("/unsubscribe", async (ctx) => {
 $.route("/renew", async (ctx) => {
   await checkAngelRole(ctx);
   const chat = nonNullable(ctx.chat);
-  await setAngelSubscription(
+  await collections.angel_subscription.upsertOne(
     ctx,
     { chatId: chat.id },
     { replyingToThreadId: null }
   );
-
   await ctx.replyHtml(ctx.t("html-alright-you-stopped-replying"), {
     reply_markup: new InlineKeyboard().text(
       ctx.t("text-unsubscribe"),

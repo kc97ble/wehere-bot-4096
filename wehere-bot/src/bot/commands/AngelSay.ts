@@ -11,7 +11,7 @@ import { nonNullable } from "wehere-bot/src/utils/assert";
 import { html, isMessagePlainText } from "wehere-bot/src/utils/format";
 import { getWehereTinyurl, getWehereUrlV2 } from "wehere-bot/src/utils/parse";
 
-import { readAngelSubscription } from "../operations/angel";
+import { collections } from "../operations";
 import {
   createDeadMessage,
   createMessage,
@@ -30,7 +30,9 @@ async function checkAngelSubscription(
   ctx: BotContext$CommandBuilder
 ): Promise<PersistentAngelSubscription> {
   const chat = nonNullable(ctx.chat);
-  const angel = await readAngelSubscription(ctx, { chatId: chat.id });
+  const angel = await collections.angel_subscription.findOne(ctx, {
+    chatId: chat.id,
+  });
   if (angel) return angel;
   await ctx.replyHtml(ctx.t("html-you-not-subscribing"), {
     reply_markup: new InlineKeyboard().text(

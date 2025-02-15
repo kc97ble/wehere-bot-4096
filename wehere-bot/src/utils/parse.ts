@@ -68,3 +68,15 @@ export async function getWehereTinyurl(
   assert(doc, "doc not created");
   return `wehere+tinyurl://${doc._id}`;
 }
+
+export function percentDecode(
+  value: string | null | undefined
+): string | undefined {
+  if (value == null) {
+    return undefined;
+  }
+  if (!/^[A-Za-z0-9\-_.!~*'()%]*$/.test(value)) {
+    console.warn("all environment variables should be percent-encoded:", value);
+  }
+  return decodeURIComponent(value);
+}

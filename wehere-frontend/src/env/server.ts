@@ -1,3 +1,4 @@
+import { percentDecode } from "wehere-bot/src/utils/parse";
 import { z } from "zod";
 
 export type ServerEnv = z.infer<typeof ServerEnv>;
@@ -7,12 +8,6 @@ export const ServerEnv = z.object({
 });
 
 export const SERVER_ENV = ServerEnv.parse({
-  WEHERE_BACKEND_ORIGIN:
-    process.env.WEHERE_BACKEND_ORIGIN ||
-    decodeURIComponent(process.env.WEHERE_BACKEND_ORIGIN__URLENCODED || "") ||
-    undefined,
-  METADATA_BASE:
-    process.env.METADATA_BASE ||
-    decodeURIComponent(process.env.METADATA_BASE__URLENCODED || "") ||
-    undefined,
+  WEHERE_BACKEND_ORIGIN: percentDecode(process.env.WEHERE_BACKEND_ORIGIN),
+  METADATA_BASE: percentDecode(process.env.METADATA_BASE),
 });

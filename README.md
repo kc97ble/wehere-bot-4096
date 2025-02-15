@@ -20,4 +20,10 @@ TODO: use collection `config` to store availability and schedule
 TODO: use template to reply mortal when they type /start
 TODO: allow angel and mortal to set languages, also, use the user preferred languages
 TODO: add cached functions in context such as getRole, getLocale
+
+TODO: use monolith for better latency
+TODO: in .env file, all values are percent encoded
+
+TODO: find a way to self test faster, maybe some auto reply commands (messages start with >)
+TODO: means we need
 ```

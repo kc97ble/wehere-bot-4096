@@ -48,6 +48,10 @@ export async function joinPromisesGracefully(
   );
 }
 
+/**
+ * Inserts a new message to the database.
+ * Remember to use `notifyNewMessage` afterwards.
+ **/
 export async function createMessage(
   { db }: { db: Db },
   { message }: { message: WithoutId<PersistentThreadMessage> }

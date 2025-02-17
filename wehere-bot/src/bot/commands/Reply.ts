@@ -1,12 +1,12 @@
 import { ObjectId } from "mongodb";
 import type { Command } from "wehere-bot/src/types";
+import { Locale } from "wehere-bot/src/typing/common";
 import { assert, nonNullable } from "wehere-bot/src/utils/assert";
 import { withDefaultErrorHandler } from "wehere-bot/src/utils/error";
 import { formatThread, html } from "wehere-bot/src/utils/format";
 import { z } from "zod";
 
 import { collections } from "../operations";
-import { getAngelLocale } from "../operations/angel";
 import { getThread_givenThreadId } from "../operations/thread";
 
 const handleCallbackQuery = withDefaultErrorHandler(async (ctx) => {
@@ -23,8 +23,9 @@ const handleCallbackQuery = withDefaultErrorHandler(async (ctx) => {
     { chatId: msg0.chat.id },
     { $set: { replyingToThreadId: threadId, updatedAt: Date.now() } }
   );
-
-  const locale = await getAngelLocale(ctx, msg0.chat.id);
+  const locale = await collections.angel_subscription
+    .findOne(ctx, { chatId: msg0.chat.id })
+    .then((angel) => Locale.orDefault(angel?.locale));
   await ctx.api.sendMessage(
     nonNullable(msg0.chat.id),
     ctx.i18n.withLocale(locale)("html-replying-to", {

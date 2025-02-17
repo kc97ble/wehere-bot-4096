@@ -2,9 +2,10 @@ import type { TranslationContext } from "@moebius/fluent";
 import type { RawApi } from "grammy";
 import type { BotContext } from "wehere-bot/src/types";
 
-import { getAngelLocale } from "../bot/operations/angel";
+import { collections } from "../bot/operations";
 import { getMortalLocale } from "../bot/operations/mortal";
 import { getRole } from "../bot/operations/role";
+import { Locale } from "../typing/common";
 
 import { nonNullable } from "./assert";
 import { html } from "./format";
@@ -59,7 +60,9 @@ export function withReplyHtml<OtherArgs extends unknown[]>(
     const locale =
       role === "mortal"
         ? await getMortalLocale(ctx, chat.id)
-        : await getAngelLocale(ctx, chat.id);
+        : await collections.angel_subscription
+            .findOne(ctx, { chatId: chat.id })
+            .then((angel) => Locale.orDefault(angel?.locale));
     const t = ctx.i18n.withLocale(locale);
     const replyHtml: ReplyHtml = (text, other) =>
       ctx.api.sendMessage(chat.id, text, { parse_mode: "HTML", ...other });

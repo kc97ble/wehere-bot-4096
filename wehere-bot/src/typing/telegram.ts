@@ -13,14 +13,10 @@ export const User = z.object({
   added_to_attachment_menu: z.literal(true).optional(),
 });
 
-const AbstractMessageEntity = z.object({
-  type: z.string(),
-  offset: z.number(),
-  length: z.number(),
-});
-
-const CommonMessageEntity = AbstractMessageEntity.extend({
-  type: z.enum([
+export type MessageEntity = z.infer<typeof MessageEntity>;
+export const MessageEntity = z.custom<GrammyTypes.MessageEntity>((val) =>
+  [
+    // MessageEntity.CommonMessageEntity
     "mention",
     "hashtag",
     "cashtag",
@@ -34,38 +30,18 @@ const CommonMessageEntity = AbstractMessageEntity.extend({
     "strikethrough",
     "spoiler",
     "blockquote",
+    "expandable_blockquote",
     "code",
-  ]),
-});
-
-const PreMessageEntity = AbstractMessageEntity.extend({
-  type: z.literal("pre"),
-  language: z.string().optional(),
-});
-
-const TextLinkMessageEntity = AbstractMessageEntity.extend({
-  type: z.literal("text_link"),
-  url: z.string(),
-});
-
-const TextMentionMessageEntity = AbstractMessageEntity.extend({
-  type: z.literal("text_mention"),
-  user: User,
-});
-
-const CustomEmojiMessageEntity = AbstractMessageEntity.extend({
-  type: z.literal("custom_emoji"),
-  custom_emoji_id: z.string(),
-});
-
-export type MessageEntity = z.infer<typeof MessageEntity>;
-export const MessageEntity = z.union([
-  CommonMessageEntity,
-  CustomEmojiMessageEntity,
-  PreMessageEntity,
-  TextLinkMessageEntity,
-  TextMentionMessageEntity,
-]);
+    // MessageEntity.CustomEmojiMessageEntity
+    "custom_emoji",
+    // MessageEntity.PreMessageEntity
+    "pre",
+    // MessageEntity.TextLinkMessageEntity
+    "text_link",
+    // MessageEntity.TextMentionMessageEntity
+    "text_mention",
+  ].includes(val?.type)
+);
 
 export type ReactionType = GrammyTypes.ReactionType;
 export const ReactionType = z.custom<ReactionType>((obj) => {

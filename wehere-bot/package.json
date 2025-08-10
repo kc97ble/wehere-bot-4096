@@ -2,11 +2,11 @@
   "name": "wehere-bot",
   "main": "src/index.ts",
   "dependencies": {
-    "@grammyjs/auto-retry": "^2.0.1",
+    "@grammyjs/auto-retry": "^2.0.2",
     "@grammyjs/transformer-throttler": "^1.2.1",
     "@moebius/fluent": "^1.1.0",
     "dotenv": "^16.4.5",
-    "grammy": "^1.22.4",
+    "grammy": "^1.37.0",
     "html-escaper": "^3.0.3",
     "mongodb": "^6.6.1",
     "pusher": "^5.2.0",
